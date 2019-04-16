@@ -1,3 +1,5 @@
+#This figure generates Fig 5 A-F
+
 library(scater)
 
 dat <- read.table('GSE81608_human_islets_rpkm.txt', header = T)
@@ -82,50 +84,6 @@ km(cell.type,cor(mnnmod),4)
 #scBatch
 km(cell.type,cor(scbatchmod),4)
 #0.604
-
-# PCA plots
-
-library(ggplot2)
-library(gridExtra)
-library(Rtsne)
-
-pca <- princomp(cor(rawdat))$scores[,1:2]
-plotdat <- data.frame(PC1=pca[,1],PC2=pca[,2],color=batch)
-p1 = ggplot(plotdat,aes(x=PC1 , y=PC2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('Uncorrected data') + theme_classic()
-
-pca <- princomp(cor(combatmod))$scores[,1:2]
-plotcombat <- data.frame(PC1=pca[,1],PC2=pca[,2],color=batch)
-p2 = ggplot(plotcombat,aes(x=PC1 , y=PC2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('ComBat') + theme_classic()
-
-pca <- princomp(cor(mnnmod))$scores[,1:2]
-plotmnn <- data.frame(PC1=pca[,1],PC2=pca[,2],color=batch)
-p3 = ggplot(plotmnn,aes(x=PC1 , y=PC2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('MNN') + theme_classic()
-
-pca <- princomp(cor(scbatchmod))$scores[,1:2]
-plotscbatch <- data.frame(PC1=pca[,1],PC2=pca[,2],color=batch)
-p4 = ggplot(plotscbatch,aes(x=PC1 , y=PC2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('scBatch') + theme_classic()
-
-grid.arrange(p1,p2,p3,p4,nrow=2)
-
-###########################################
-
-tsne <- Rtsne(cor(rawdat))
-plotdat <- data.frame(TSNE1=tsne$Y[,1],TSNE2=tsne$Y[,2])
-p1 = ggplot(plotdat,aes(x=TSNE1, y=TSNE2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('Uncorrected data') + theme_classic()
-
-tsne <- Rtsne(cor(combatmod))
-plotcombat <- data.frame(TSNE1=tsne$Y[,1],TSNE2=tsne$Y[,2])
-p2 = ggplot(plotcombat,aes(x=TSNE1, y=TSNE2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('ComBat') + theme_classic()
-
-tsne <- Rtsne(cor(mnnmod))
-plotmnn <- data.frame(TSNE1=tsne$Y[,1],TSNE2=tsne$Y[,2])
-p3 = ggplot(plotmnn,aes(x=TSNE1, y=TSNE2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('MNN') + theme_classic()
-
-tsne <- Rtsne(cor(scbatchmod))
-plotscbatch <- data.frame(TSNE1=tsne$Y[,1],TSNE2=tsne$Y[,2])
-p4 = ggplot(plotscbatch,aes(x=TSNE1, y=TSNE2)) + geom_point(size=1,aes(color=cell.type)) + ggtitle('scBatch') + theme_classic()
-
-grid.arrange(p1,p2,p3,p4,nrow=2)
 
 
 ###########################################
