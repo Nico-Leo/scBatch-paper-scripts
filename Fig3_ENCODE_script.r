@@ -1,3 +1,5 @@
+#The following code generates Fig 3 A-D.
+
 library(scBatch)
 library(pheatmap)
 library(scran)
@@ -8,7 +10,7 @@ data("ENCODE")
 batches <- c(rep(1,13),rep(2,13))
 cell.type <- c(1:13,1:13)
 
-#raw data heatmap
+#raw data heatmap (Fig 3A)
 pheatmap(cor(ENCODE))
 
 #standardization
@@ -32,12 +34,12 @@ standardization <- function(dat,batch)
 
 dat <- standardization(ENCODE,batches)
 
-#ComBat
+#ComBat (Fig 3B)
 
 combatmod = ComBat(dat,batches)
 pheatmap(cor(combatmod))
 
-#MNN
+#MNN (Fig 3C)
 
 batch1 = dat[,1:13]
 batch2 = dat[,14:26]
@@ -46,7 +48,7 @@ mnnmod = cbind(mnnmod$corrected[[1]],mnnmod$corrected[[2]])
 colnames(mnnmod) = colnames(ENCODE)
 pheatmap(cor(mnnmod))
 
-#scBatch
+#scBatch (Fig 3D)
 
 set.seed(1234)
 distmod <- QuantNorm(dat,batches,method='row/column', cor_method='pearson', logdat=F,tol=1e-4)
