@@ -85,6 +85,9 @@ km(cell.type,cor(mnnmod),4)
 km(cell.type,cor(scbatchmod),4)
 #0.604
 
+library(ggplot2)
+library(gridExtra)
+library(Rtsne)
 
 ###########################################
 # Figure 5A
