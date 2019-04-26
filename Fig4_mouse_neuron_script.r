@@ -288,7 +288,6 @@ for(i in 1:6)
 		GOlist[[k]]<-get.table(DElist[[k]], all.genes, all.entrez)
 	}
 	names(GOlist)<-names(DElist)
-	#save(GOlist, file=paste(strsplit(files[i], ".rdata")[[1]][1],"GO.bin"))
 
 	b<-GOlist[[4]]
 	b<-rbind(c(names(GOlist)[4],rep("",6)), b)
@@ -298,7 +297,7 @@ for(i in 1:6)
 		b<-rbind(b, GOlist[[k]])
 	}
 
-	write.table(b, paste(strsplit(files[i], ".rdata")[[1]][1],".GO 005 verify.txt"), sep="\t", quote=F, col.names=F, row.names=F)
+	write.table(b, paste(strsplit(files[i], ".rdata")[[1]][1],".GO 005.txt"), sep="\t", quote=F, col.names=F, row.names=F)
 }
 
 
