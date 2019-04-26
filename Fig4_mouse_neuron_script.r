@@ -11,7 +11,6 @@ cell.type <- scenet@colData$cell_type1
 rawdat <- rawdat[,!(batch %in% c('L281','L282'))]
 cell.type <- cell.type[!(batch %in% c('L281','L282'))]
 batch <- batch[!(batch %in% c('L281','L282'))]
-save(rawdat,cell.type,batch,file='usoskinnew.rdata')
 
 #ComBat
 library(sva)
