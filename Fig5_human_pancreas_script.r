@@ -247,9 +247,62 @@ for (i in 1:6){
 }
 grid.arrange(V[[1]],V[[2]],V[[3]],V[[4]],V[[5]],V[[6]],nrow=2)
 
+
+########################################################################
+# Gene Ontology analysis using GOstats
+
+# First save DE gene list for the cell type pairs
+# Each file contains detected DE genes from Uncorrected, MNN, ComBat and scBatch
+# Please consider save data in a new directory in convenience of next steps
 for (i in 1:6){
   groups = combn(c('alpha','beta','delta','gamma'),2)[,i]
   DElist<-list(M = as.vector(DEmnn[[i]]),S = as.vector(DEscbatch[[i]]),
                C = as.vector(DEcombat[[i]]),R = as.vector(DEraw[[i]]))
   save(DElist,file=paste('xinfiltered_',groups[1],'_',groups[2],'.rdata',sep=''))
+}
+
+library(org.Hs.eg.db)
+library(GOstats)
+
+# Match gene names from raw data with database
+all.genes<-rownames(rawdat)
+all.entrez<-mget(toupper(all.genes), org.Hs.egSYMBOL2EG, ifnotfound=NA)
+all.entrez.2<-all.genes
+for(i in 1:length(all.entrez.2)) all.entrez.2[i]<-all.entrez[[i]][1]
+all.entrez<-all.entrez.2
+
+# Main function to conduct GO analysis
+get.table<-function(sel.genes, all.genes, all.entrez)
+{
+	sel.entrez<-all.entrez[which(all.genes %in% sel.genes)]
+	params <- new("GOHyperGParams", geneIds=sel.entrez[!is.na(sel.entrez)], universeGeneIds=all.entrez[!is.na(all.entrez)], ontology="BP", pvalueCutoff=0.005,conditional=F, testDirection="over", annotation="org.Hs.eg.db")
+	over = hyperGTest(params)
+	ov<-summary(over)
+	ov<-ov[ov[,6]<=500 & ov[,6]>=10,]
+	for(i in 2:4) ov[,i]<-signif(ov[,i], 3)
+	ov
+}
+
+# Obtain the file names of saved DE gene lists (should have 6 .rdata files)
+files<-dir(pattern=".rdata")
+
+# Conduct and save GO analysis results for all 6 cell type pairs
+for(i in 1:6)
+{
+  # Read saved data
+	load(files[i])
+	GOlist<-new("list")
+	for(k in 1:4)
+	{
+		GOlist[[k]]<-get.table(DElist[[k]], all.genes, all.entrez)
+	}
+	names(GOlist)<-names(DElist)
+	b<-GOlist[[4]]
+	b<-rbind(c(names(GOlist)[4],rep("",6)), b)
+	for(k in c(3,1,2))
+	{
+		b<-rbind(b, c(names(GOlist)[k],rep("",6)))
+		b<-rbind(b, GOlist[[k]])
+	}
+	write.table(b, paste(strsplit(files[i], ".rdata")[[1]][1],".GO 005.txt"), sep="\t", quote=F, col.names=F, row.names=F)
 }
